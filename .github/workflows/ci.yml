@@ -1,20 +1,19 @@
 name: CI
 
-on:
-  push:
+on: [push]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        hg: [ '5.5', '5.6', '5.7', '5.8', '5.9', '6.0', '6.1', '6.2', '6.3', '6.4' ]
+        hg: [ '6.0', '6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '6.7', '6.8', '6.9', '7.0' ]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      - uses: actions/cache@v3
+          python-version: '3.11'
+      - uses: actions/cache@v4
         id: cache-pip
         with:
           path: ~/.cache/pip
@@ -22,15 +21,15 @@ jobs:
       - name: Install hg
         run:
           pip install mercurial==${{ matrix.hg }}
-      - run: make test
+      - run: prove -j4
   test-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      - uses: actions/cache@v3
+          python-version: '3.11'
+      - uses: actions/cache@v4
         id: cache-pip
         with:
           path: ~/appdata/local/pip/cache
@@ -39,5 +38,4 @@ jobs:
         run:
           pip install mercurial
       - name: Run all tests
-        run: |
-          make SHELL='C:/Program Files/Git/usr/bin/bash' -C test
+        run: prove -j4 --exec bash.exe
